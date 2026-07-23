@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>המרכז למיפוי ישראל | פורטל שירותים ומוצרים דיגיטלי</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root{
+    --navy:#0d2b45;
+    --navy-dark:#081b2e;
+    --teal:#0f7c8c;
+    --teal-light:#e6f3f4;
+    --gold:#b8873a;
+    --gold-light:#f6ecdb;
+    --paper:#f7f8fa;
+    --line:#dfe4e9;
+    --ink:#1a2733;
+    --ink-soft:#5b6b78;
+    --ok:#2f7d4f;
+    --warn:#b8873a;
+  }
+  *{font-family:'Heebo',sans-serif;}
+  body{background:var(--paper); color:var(--ink);}
+  .route{display:none;}
+  .route.active{display:block;}
+  .brand-gradient{background:linear-gradient(135deg, var(--navy) 0%, #123a5c 55%, var(--teal) 130%);}
+  .gold-btn{background:var(--gold); color:#fff;}
+  .gold-btn:hover{background:#a37527;}
+  .navy-btn{background:var(--navy); color:#fff;}
+  .navy-btn:hover{background:var(--navy-dark);}
+  .card{background:#fff; border:1px solid var(--line); border-radius:10px;}
+  .chip{border:1px solid var(--line); border-radius:999px; padding:4px 12px; font-size:12px; color:var(--ink-soft); background:#fff;}
+  .chip.active{background:var(--teal); color:#fff; border-color:var(--teal);}
+  ::-webkit-scrollbar{width:8px; height:8px;}
+  ::-webkit-scrollbar-thumb{background:#c7ced4; border-radius:8px;}
+
+  /* Salesforce annotation layer */
+  .sf-badge{display:none; align-items:center; gap:6px; font-size:11px; background:#fff3e0; color:#8a5a00; border:1px dashed #d9a441; border-radius:6px; padding:3px 8px; margin-top:6px; line-height:1.5;}
+  body.sf-on .sf-badge{display:inline-flex;}
+  body.sf-on .sf-highlight{outline:2px dashed #d9a441; outline-offset:3px;}
+  #sf-panel{position:fixed; inset-inline-end:0; top:0; height:100%; width:360px; max-width:88vw; background:#fff; border-inline-start:1px solid var(--line); box-shadow:-6px 0 24px rgba(0,0,0,.08); transform:translateX(110%); transition:transform .28s ease; z-index:60; overflow-y:auto;}
+  html[dir="rtl"] #sf-panel{transform:translateX(-110%);}
+  #sf-panel.open{transform:translateX(0);}
+  .sf-step{border-inline-start:3px solid var(--teal); padding:8px 12px; margin-bottom:10px; background:var(--teal-light); border-radius:6px;}
+  .toggle-wrap{display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none;}
+  .toggle-track{width:40px; height:22px; background:#3a5064; border-radius:999px; position:relative; transition:.2s;}
+  .toggle-dot{position:absolute; top:2px; right:2px; width:18px; height:18px; background:#fff; border-radius:999px; transition:.2s;}
+  body.sf-on .toggle-track{background:var(--gold);}
+  body.sf-on .toggle-dot{right:20px;}
+  .step-dot{width:26px; height:26px; border-radius:999px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; background:var(--line); color:var(--ink-soft);}
+  .step-dot.on{background:var(--teal); color:#fff;}
+  .fade-in{animation:fadeIn .25s ease;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+  .qty-btn{width:28px; height:28px; border:1px solid var(--line); border-radius:6px; display:flex; align-items:center; justify-content:center; background:#fff;}
+  .map-mock{background:repeating-linear-gradient(45deg, #eef3f5, #eef3f5 10px, #e3ecef 10px, #e3ecef 20px);}
+</style>
+</head>
+<body class="sf-on">
+
+<!-- ============ Top gov strip ============ -->
+<div class="brand-gradient text-white text-xs">
+  <div class="max-w-7xl mx-auto px-4 py-1.5 flex items-center justify-between">
+    <span>מדינת ישראל | משרד המשפטים | המרכז למיפוי ישראל (מפ"י)</span>
+    <div class="hidden sm:flex items-center gap-4">
+      <span>נגישות</span>
+      <span>English</span>
+      <span>יצירת קשר</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Header ============ -->
+<header class="bg-white border-b" style="border-color:var(--line);">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-3 cursor-pointer" onclick="go('home')">
+      <div class="w-11 h-11 rounded-lg brand-gradient flex items-center justify-center text-white font-extrabold text-lg">מ"י</div>
+      <div>
+        <div class="font-bold text-lg leading-tight" style="color:var(--navy)">המרכז למיפוי ישראל</div>
+        <div class="text-xs" style="color:var(--ink-soft)">פורטל מוצרים ושירותים דיגיטלי</div>
+      </div>
+    </div>
+    <nav class="hidden lg:flex items-center gap-6 text-sm font-medium" style="color:var(--ink)">
+      <a class="hover:opacity-70" onclick="go('home')">בית</a>
+      <a class="hover:opacity-70" onclick="go('catalog')">קטלוג מוצרים ושירותים</a>
+      <a class="hover:opacity-70" onclick="go('account')">האזור האישי</a>
+      <a class="hover:opacity-70" onclick="go('support')">תמיכה ושירותים מקצועיים</a>
+    </nav>
+    <div class="flex items-center gap-3">
+      <div class="toggle-wrap text-xs font-medium" style="color:var(--ink-soft)" onclick="toggleSF()">
+        <span class="hidden md:inline">תצוגת ארכיטקטורת Salesforce</span>
+        <div class="toggle-track"><div class="toggle-dot"></div></div>
+      </div>
+      <button class="relative navy-btn rounded-lg px-3 py-2 text-sm" onclick="go('cart')">
+        סל קניות
+        <span id="cartCount" class="absolute -top-2 -start-2 bg-white text-[11px] font-bold rounded-full w-5 h-5 flex items-center justify-center" style="color:var(--navy); border:1px solid var(--line);">0</span>
+      </button>
+      <button class="hidden sm:block gold-btn rounded-lg px-3 py-2 text-sm" onclick="go('account')">האזור האישי שלי</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ SF Architecture Side Panel ============ -->
+<div id="sf-panel">
+  <div class="p-4 border-b flex items-center justify-between" style="border-color:var(--line); background:var(--navy); color:#fff;">
+    <div class="font-bold">ארכיטקטורת Salesforce למסך הנוכחי</div>
+    <button onclick="closeSFPanel()" class="text-white text-xl leading-none">&times;</button>
+  </div>
+  <div id="sf-panel-body" class="p-4 text-sm"></div>
+</div>
+
+<main class="max-w-7xl mx-auto px-4 py-8">
+
+<!-- ============ HOME ============ -->
+<section id="route-home" class="route active fade-in">
+  <div class="brand-gradient rounded-2xl p-8 md:p-14 text-white relative overflow-hidden">
+    <div class="max-w-2xl relative z-10">
+      <div class="text-xs uppercase tracking-wide opacity-80 mb-2">שירות ממשלתי דיגיטלי</div>
+      <h1 class="text-3xl md:text-4xl font-extrabold leading-tight mb-4">מפות, נתונים גיאוגרפיים ושירותי מדידה - במקום אחד</h1>
+      <p class="text-white/85 mb-6 leading-relaxed">גישה לכלל מוצרי ושירותי המרכז למיפוי ישראל: תצלומי אוויר, אורתופוטו, מפות טופוגרפיות והיסטוריות, שכבות GIS, שירותי GNSS ומדידה - הזמנה, תשלום ומעקב מקוונים.</p>
+      <div class="bg-white rounded-xl p-2 flex items-center gap-2 shadow-lg">
+        <input id="homeSearch" type="text" placeholder="חפשו מוצר, שירות או אזור בארץ..." class="flex-1 px-3 py-2 text-ink outline-none rounded-lg" style="color:#1a2733;">
+        <button class="gold-btn rounded-lg px-5 py-2 text-sm font-semibold" onclick="searchFromHome()">חיפוש</button>
+      </div>
+      <div class="sf-badge mt-3">SF: חיפוש אנונימי ← אין רשומה נוצרת. שליחת טופס יצירת קשר ← Web-to-Lead ← אובייקט Lead</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8" id="quickCats"></div>
+
+  <div class="flex items-center justify-between mt-12 mb-4">
+    <h2 class="text-xl font-bold" style="color:var(--navy)">מוצרים ושירותים נבחרים</h2>
+    <button class="text-sm font-medium" style="color:var(--teal)" onclick="go('catalog')">לכל הקטלוג ←</button>
+  </div>
+  <div id="featuredGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
+
+  <div class="grid md:grid-cols-3 gap-5 mt-14">
+    <div class="card p-5">
+      <div class="text-2xl mb-2">🗺️</div>
+      <div class="font-bold mb-1">15 מסלולי מכירה מובנים</div>
+      <div class="text-sm" style="color:var(--ink-soft)">מרישום מנוי CORS ועד תיק גוש-חלקה - כל מסלול מנוהל כ-Record Type ייעודי על גבי Opportunity.</div>
+    </div>
+    <div class="card p-5">
+      <div class="text-2xl mb-2">📄</div>
+      <div class="font-bold mb-1">הזמנה, תשלום ומעקב מקוונים</div>
+      <div class="text-sm" style="color:var(--ink-soft)">מהצעת מחיר ועד הורדת הקובץ הסופי - כל השלבים נגישים באזור האישי בזמן אמת.</div>
+    </div>
+    <div class="card p-5">
+      <div class="text-2xl mb-2">🎧</div>
+      <div class="font-bold mb-1">תמיכה ושירותים מקצועיים</div>
+      <div class="text-sm" style="color:var(--ink-soft)">פתיחת פניות, בקשת ייעוץ מודד וקבלת אישורים - הכול מתועד ומטופל דרך Case Management.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CATALOG ============ -->
+<section id="route-catalog" class="route fade-in">
+  <div class="flex items-center gap-2 text-sm mb-4" style="color:var(--ink-soft)">
+    <span class="cursor-pointer" onclick="go('home')">בית</span> / <span style="color:var(--ink)">קטלוג מוצרים ושירותים</span>
+  </div>
+  <h1 class="text-2xl font-bold mb-1" style="color:var(--navy)">קטלוג מוצרים ושירותים</h1>
+  <p class="text-sm mb-6" style="color:var(--ink-soft)">15 מסלולי מכירה, 9 קטגוריות מוצר. סננו לפי סוג מפה, קנה מידה, אזור, רזולוציה, תאריך, מחיר ורישיון.</p>
+  <div class="sf-badge mb-4">SF: כל תוצאה מוצגת נשלפת מ-Product2 + Price Book Entry לפי מחירון פעיל</div>
+
+  <div class="grid md:grid-cols-4 gap-6">
+    <aside class="md:col-span-1 space-y-5">
+      <div class="card p-4">
+        <input id="catalogSearch" oninput="renderCatalog()" type="text" placeholder="חיפוש חופשי..." class="w-full border rounded-lg px-3 py-2 text-sm" style="border-color:var(--line);">
+      </div>
+      <div class="card p-4">
+        <div class="font-semibold text-sm mb-2">קטגוריה</div>
+        <div id="catFilter" class="flex flex-col gap-1 text-sm"></div>
+      </div>
+      <div class="card p-4">
+        <div class="font-semibold text-sm mb-2">סוג נתון / מפה</div>
+        <div class="flex flex-wrap gap-2" id="typeFilter"></div>
+      </div>
+      <div class="card p-4">
+        <div class="font-semibold text-sm mb-2">רזולוציה</div>
+        <select id="resFilter" onchange="renderCatalog()" class="w-full border rounded-lg px-2 py-1.5 text-sm" style="border-color:var(--line);">
+          <option value="">הכול</option>
+          <option>גס (&gt;1מ')</option>
+          <option>בינוני (10-50 ס"מ)</option>
+          <option>גבוה (&lt;10 ס"מ)</option>
+        </select>
+      </div>
+      <div class="card p-4">
+        <div class="font-semibold text-sm mb-2">טווח מחיר (₪)</div>
+        <input id="priceFilter" type="range" min="0" max="5000" value="5000" oninput="renderCatalog()" class="w-full">
+        <div class="text-xs" style="color:var(--ink-soft)">עד <span id="priceVal">5000</span> ₪</div>
+      </div>
+      <div class="card p-4">
+        <div class="font-semibold text-sm mb-2">סוג רישיון</div>
+        <select id="licFilter" onchange="renderCatalog()" class="w-full border rounded-lg px-2 py-1.5 text-sm" style="border-color:var(--line);">
+          <option value="">הכול</option>
+          <option>שימוש אישי</option>
+          <option>שימוש ארגוני</option>
+          <option>מנוי מתחדש</option>
+        </select>
+      </div>
+    </aside>
+    <div class="md:col-span-3">
+      <div class="flex items-center justify-between mb-3">
+        <div class="text-sm" style="color:var(--ink-soft)"><span id="resultCount"></span> תוצאות</div>
+        <select onchange="renderCatalog()" id="sortSel" class="border rounded-lg px-2 py-1.5 text-sm" style="border-color:var(--line);">
+          <option value="rel">מיון: רלוונטיות</option>
+          <option value="priceAsc">מחיר: מהנמוך לגבוה</option>
+          <option value="priceDesc">מחיר: מהגבוה לנמוך</option>
+        </select>
+      </div>
+      <div id="catalogGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRODUCT ============ -->
+<section id="route-product" class="route fade-in">
+  <div id="productDetail"></div>
+</section>
+
+<!-- ============ CART ============ -->
+<section id="route-cart" class="route fade-in">
+  <h1 class="text-2xl font-bold mb-1" style="color:var(--navy)">סל הקניות שלי</h1>
+  <div class="sf-badge mb-4">SF: הסל מנוהל כטיוטת Opportunity + OpportunityLineItem לכל שורת מוצר</div>
+  <div class="grid md:grid-cols-3 gap-6">
+    <div class="md:col-span-2 space-y-3" id="cartItems"></div>
+    <div class="card p-5 h-fit">
+      <div class="font-bold mb-3">סיכום הזמנה</div>
+      <div class="flex justify-between text-sm mb-1"><span>סכום ביניים</span><span id="sumSub">0 ₪</span></div>
+      <div class="flex justify-between text-sm mb-1"><span>מע"מ (17%)</span><span id="sumVat">0 ₪</span></div>
+      <div class="flex justify-between font-bold text-base border-t pt-2 mt-2" style="border-color:var(--line);"><span>סה"כ לתשלום</span><span id="sumTotal">0 ₪</span></div>
+      <button class="w-full gold-btn rounded-lg py-2.5 mt-4 font-semibold" onclick="go('checkout')">המשך לתשלום</button>
+      <button class="w-full mt-2 text-sm py-2" style="color:var(--teal)" onclick="go('catalog')">המשך בקנייה</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CHECKOUT ============ -->
+<section id="route-checkout" class="route fade-in">
+  <h1 class="text-2xl font-bold mb-6" style="color:var(--navy)">תשלום מאובטח</h1>
+  <div class="flex items-center gap-3 mb-8" id="checkoutSteps"></div>
+  <div class="grid md:grid-cols-3 gap-6">
+    <div class="md:col-span-2 card p-6" id="checkoutBody"></div>
+    <div class="card p-5 h-fit">
+      <div class="font-bold mb-3">סיכום הזמנה</div>
+      <div class="flex justify-between font-bold text-base"><span>סה"כ לתשלום</span><span id="coTotal">0 ₪</span></div>
+      <div class="sf-badge mt-3">SF: אישור תשלום ← יצירת Order מתוך ה-Opportunity שנסגרה (Closed Won) + עדכון שדה Payment Status</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ACCOUNT ============ -->
+<section id="route-account" class="route fade-in">
+  <h1 class="text-2xl font-bold mb-1" style="color:var(--navy)">האזור האישי</h1>
+  <p class="text-sm mb-5" style="color:var(--ink-soft)">שלום, ישראל ישראלי | לקוח ארגוני - עיריית דוגמה</p>
+  <div class="flex gap-2 overflow-x-auto mb-6 pb-1" id="accountTabs"></div>
+  <div id="accountBody"></div>
+</section>
+
+<!-- ============ SUPPORT ============ -->
+<section id="route-support" class="route fade-in">
+  <h1 class="text-2xl font-bold mb-1" style="color:var(--navy)">תמיכה ושירותים מקצועיים</h1>
+  <p class="text-sm mb-6" style="color:var(--ink-soft)">פתיחת פנייה, בקשת ייעוץ מודד מקצועי או בקשת אישור/תעודה.</p>
+  <div class="sf-badge mb-4">SF: שליחת הטופס ← יצירת רשומת Case מסוג "בקשת שירות" + שיוך ל-Contact/Account, הפעלת Action Plan Template לפי סוג הפנייה</div>
+  <div class="grid md:grid-cols-2 gap-6">
+    <div class="card p-6">
+      <div class="font-bold mb-4">פתיחת פנייה חדשה</div>
+      <label class="text-sm block mb-1">סוג הפנייה</label>
+      <select class="w-full border rounded-lg px-3 py-2 mb-3 text-sm" style="border-color:var(--line);">
+        <option>בקשה לייעוץ מודד מוסמך</option>
+        <option>בקשת אישור / תעודת עובד ציבור</option>
+        <option>תמיכה טכנית במוצר שנרכש</option>
+        <option>בירור חשבונית / תשלום</option>
+      </select>
+      <label class="text-sm block mb-1">תיאור הפנייה</label>
+      <textarea rows="4" class="w-full border rounded-lg px-3 py-2 mb-4 text-sm" style="border-color:var(--line);" placeholder="פרטו את בקשתכם..."></textarea>
+      <button class="gold-btn rounded-lg px-5 py-2.5 text-sm font-semibold" onclick="submitCase()">שליחת פנייה</button>
+    </div>
+    <div class="card p-6">
+      <div class="font-bold mb-4">הפניות הפתוחות שלי</div>
+      <div id="caseList" class="space-y-3 text-sm"></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="brand-gradient text-white mt-16">
+  <div class="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-4 gap-6 text-sm">
+    <div>
+      <div class="font-bold mb-2">המרכז למיפוי ישראל</div>
+      <p class="text-white/70 leading-relaxed">היחידה הממשלתית המוסמכת למיפוי, מדידה ורישום מקרקעין במדינת ישראל.</p>
+    </div>
+    <div><div class="font-bold mb-2">מוצרים</div><div class="text-white/70 space-y-1"><div>תצלומי אוויר ואורתופוטו</div><div>מפות טופוגרפיות</div><div>שכבות GIS</div><div>שירותי GNSS</div></div></div>
+    <div><div class="font-bold mb-2">שירות</div><div class="text-white/70 space-y-1"><div>האזור האישי</div><div>תמיכה</div><div>שאלות נפוצות</div></div></div>
+    <div><div class="font-bold mb-2">נגישות ומדינה</div><div class="text-white/70 space-y-1"><div>הצהרת נגישות</div><div>מדיניות פרטיות</div><div>gov.il</div></div></div>
+  </div>
+  <div class="text-center text-xs text-white/50 py-4 border-t border-white/10">דמו הדגמה ללקוח - כל התכנים להמחשה בלבד © 2026</div>
+</footer>
+
+<script>
+/* ================= DATA MODEL ================= */
+const CATEGORIES = [
+  {id:'aerial', name:'תצלומי אוויר ואורתופוטו', icon:'✈️', tracks:['Aerial Photos','Orthophoto & Elevation']},
+  {id:'maps', name:'מפות טופוגרפיות והיסטוריות', icon:'🗺️', tracks:['Paper Maps']},
+  {id:'custom', name:'מפות מותאמות אישית', icon:'🖨️', tracks:['Custom Map']},
+  {id:'gis', name:'שכבות GIS ושירותי מיפוי מקוונים', icon:'🌐', tracks:['GIS Layers','WS Subscription']},
+  {id:'gnss', name:'שירותי מיקום לוויני (GNSS/CORS)', icon:'📡', tracks:['CORS Subscription']},
+  {id:'borders', name:'גבולות ושמות מקומות', icon:'📍', tracks:['International Borders','Gazetteer']},
+  {id:'survey', name:'שירותי מדידה ותעודות', icon:'🧭', tracks:['Surveyor Inspection Fee','Public Servant Certificate','Tazar Extension']},
+  {id:'cadastre', name:'מדידות מקרקעין - גוש חלקה', icon:'📐', tracks:['Cadastre Jerusalem']},
+  {id:'pro', name:'שירותים מקצועיים ומנויים', icon:'🤝', tracks:['Recurring Payment']},
+];
+
+const PRODUCTS = [
+  {id:'p01', cat:'aerial', name:'תצלום אוויר אנכי - רזולוציה 10 ס"מ', type:'תצלום אוויר', res:'גבוה (<10 ס"מ)', price:850, lic:'שימוש אישי', desc:'תצלום אוויר אנכי מעודכן ברזולוציה גבוהה, מתאים לתכנון ותשתיות עירוניות.', related:['p02','p03']},
+  {id:'p02', cat:'aerial', name:'אורתופוטו צבעוני - כיסוי ארצי', type:'אורתופוטו', res:'בינוני (10-50 ס"מ)', price:1200, lic:'שימוש ארגוני', desc:'שכבת אורתופוטו מתוקנת גיאומטרית, מעודכנת שנתית, כיסוי ארצי מלא.', related:['p01','p03']},
+  {id:'p03', cat:'aerial', name:'מודל גבהים דיגיטלי (DTM/DSM)', type:'מודל גבהים', res:'בינוני (10-50 ס"מ)', price:1450, lic:'שימוש ארגוני', desc:'מודל גבהים דיגיטלי של פני הקרקע והשטח לצרכי הידרולוגיה ותכנון.', related:['p01','p02']},
+  {id:'p04', cat:'maps', name:'מפה טופוגרפית 1:50,000', type:'מפה טופוגרפית', res:'גס (>1מ\')', price:120, lic:'שימוש אישי', desc:'מפה טופוגרפית מודפסת/דיגיטלית בקנה מידה 1:50,000, עדכון אחרון 2025.', related:['p05','p06']},
+  {id:'p05', cat:'maps', name:'מפת טיולים - מסלולי שטח', type:'מפת טיולים', res:'גס (>1מ\')', price:65, lic:'שימוש אישי', desc:'מפת טיולים עם מסלולי הליכה, נקודות עניין ומידע לשטח.', related:['p04']},
+  {id:'p06', cat:'maps', name:'מפה היסטורית - סקר פלשתינה (א"י) 1940', type:'מפה היסטורית', res:'גס (>1מ\')', price:180, lic:'שימוש אישי', desc:'סריקה איכותית של מפת הסקר הבריטי המקורית, לצרכי מחקר וארכיון.', related:['p04']},
+  {id:'p07', cat:'custom', name:'הזמנת מפה בהתאמה אישית', type:'מפה מותאמת', res:'לבחירה', price:650, lic:'שימוש אישי', desc:'הפקת מפה מותאמת לפי אזור, שכבות ותוכן לבחירת הלקוח.', related:['p08']},
+  {id:'p08', cat:'custom', name:'מפה דיגיטלית להדפסה מקצועית', type:'מפה מותאמת', res:'גבוה (<10 ס"מ)', price:390, lic:'שימוש אישי', desc:'קובץ מפה ברזולוציית הדפסה גבוהה, מוכן לפלוטר מקצועי.', related:['p07']},
+  {id:'p09', cat:'gis', name:'שכבת GIS - תשתיות על', type:'שכבת GIS', res:'בינוני (10-50 ס"מ)', price:2200, lic:'שימוש ארגוני', desc:'שכבת מידע גיאוגרפי עדכנית של תשתיות על ארציות, בפורמט GIS סטנדרטי.', related:['p10','p11']},
+  {id:'p10', cat:'gis', name:'מנוי לשירותי Web Map Service (WMS/WMTS)', type:'שירות מקוון', res:'לפי בקשה', price:990, lic:'מנוי מתחדש', desc:'גישה מתמשכת לשכבות מיפוי דרך שירותי WMS/WMTS סטנדרטיים.', related:['p09']},
+  {id:'p11', cat:'gis', name:'שכבת גבולות מנהליים', type:'שכבת GIS', res:'בינוני (10-50 ס"מ)', price:740, lic:'שימוש ארגוני', desc:'שכבת גבולות רשויות מקומיות ואזורי סטטיסטיקה, מעודכנת.', related:['p09']},
+  {id:'p12', cat:'gnss', name:'מנוי תחנת CORS - זמן אמת (RTK)', type:'GNSS/RTK', res:'לפי בקשה', price:1600, lic:'מנוי מתחדש', desc:'מנוי שנתי לתיקוני מיקום בזמן אמת מרשת תחנות הבסיס הארצית.', related:['p13','p14']},
+  {id:'p13', cat:'gnss', name:'מנוי VRS - רשת תחנות ייחוס וירטואליות', type:'GNSS/VRS', res:'לפי בקשה', price:1750, lic:'מנוי מתחדש', desc:'שירות VRS לדיוק מטרי-תת-סנטימטרי בזמן אמת בכל שטח הארץ.', related:['p12']},
+  {id:'p14', cat:'gnss', name:'נתוני תיקון לאחר עיבוד (Post-Processing)', type:'GNSS', res:'לפי בקשה', price:420, lic:'שימוש אישי', desc:'קובצי תיקון RINEX להורדה לעיבוד נתוני מדידה בדיעבד.', related:['p12','p13']},
+  {id:'p15', cat:'borders', name:'שכבת גבולות בינלאומיים מאושרת', type:'גבולות', res:'בינוני (10-50 ס"מ)', price:3100, lic:'שימוש ארגוני', desc:'שכבת גבולות המדינה המאושרת רשמית לשימושים ממשלתיים ומשפטיים.', related:['p16']},
+  {id:'p16', cat:'borders', name:'מאגר שמות מקומות (Gazetteer) - רישיון ארגוני', type:'Gazetteer', res:'לפי בקשה', price:590, lic:'שימוש ארגוני', desc:'מאגר שמות היישובים, האתרים והנקודות הגיאוגרפיות המאושרות בישראל.', related:['p15']},
+  {id:'p17', cat:'survey', name:'אגרת בדיקת מודד מוסמך', type:'שירות מדידה', res:'לפי בקשה', price:340, lic:'שימוש אישי', desc:'תשלום אגרה עבור בדיקת תוכנית מדידה על ידי מודד מוסמך מטעם המרכז.', related:['p18','p19']},
+  {id:'p18', cat:'survey', name:'תעודת עובד ציבור למודד', type:'תעודה', res:'לפי בקשה', price:210, lic:'שימוש אישי', desc:'הנפקת תעודת עובד ציבור למודדים מוסמכים הפועלים מול הרשות.', related:['p17']},
+  {id:'p19', cat:'survey', name:'הארכת תצ"ר (תוכנית לצורכי רישום)', type:'שירות מדידה', res:'לפי בקשה', price:480, lic:'שימוש אישי', desc:'שירות הארכת תוקף לתוכנית לצורכי רישום שפג תוקפה.', related:['p17','p18']},
+  {id:'p20', cat:'cadastre', name:'תיק גוש חלקה - ירושלים', type:'קדסטר', res:'לפי בקשה', price:260, lic:'שימוש אישי', desc:'הנפקת תיק גוש-חלקה מלא מרישומי הקדסטר של מחוז ירושלים.', related:['p21']},
+  {id:'p21', cat:'cadastre', name:'נסח מדידה רשמי', type:'קדסטר', res:'לפי בקשה', price:150, lic:'שימוש אישי', desc:'נסח מדידה רשמי חתום דיגיטלית, תקף לשימוש מול רשויות.', related:['p20']},
+  {id:'p22', cat:'pro', name:'מנוי שנתי מתחדש - גישה למאגרי מידע', type:'מנוי', res:'לפי בקשה', price:3600, lic:'מנוי מתחדש', desc:'גישה שנתית מתחדשת לכלל מאגרי המידע הגיאוגרפי הארציים.', related:['p23']},
+  {id:'p23', cat:'pro', name:'שירות ייעוץ מדידה מקצועי', type:'שירות מקצועי', res:'לפי בקשה', price:900, lic:'שימוש אישי', desc:'ליווי מקצועי של מודד מוסמך לפרויקט מדידה או רישום.', related:['p22']},
+];
+
+const FAQS = ['מהו זמן האספקה הצפוי?','האם ניתן לקבל חשבונית מס עבור רכישה ארגונית?','מהו תוקף הרישיון לשימוש בנתונים?','האם ניתן לשדרג רזולוציה לאחר הרכישה?'];
+
+/* ================= CATEGORY ILLUSTRATIONS (self-contained SVG - no external images) ================= */
+function svgWrap(inner){
+  return `<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" class="w-full h-full">${inner}</svg>`;
+}
+function gridLines(color, step, opacity){
+  let s='';
+  for(let x=step;x<400;x+=step) s+=`<line x1="${x}" y1="0" x2="${x}" y2="300" stroke="${color}" stroke-width="1" opacity="${opacity}"/>`;
+  for(let y=step;y<300;y+=step) s+=`<line x1="0" y1="${y}" x2="400" y2="${y}" stroke="${color}" stroke-width="1" opacity="${opacity}"/>`;
+  return s;
+}
+const CATEGORY_ART = {
+  aerial: ()=> svgWrap(`
+    <rect width="400" height="300" fill="#dfe8ea"/>
+    <rect x="18" y="24" width="72" height="54" fill="#b7c9cd"/>
+    <rect x="110" y="14" width="46" height="96" fill="#a9bec3"/>
+    <rect x="180" y="40" width="90" height="60" fill="#c3d2d6"/>
+    <rect x="290" y="18" width="60" height="70" fill="#aec1c6"/>
+    <rect x="40" y="160" width="100" height="70" fill="#b3c6ca"/>
+    <rect x="170" y="150" width="60" height="110" fill="#9fb6bc"/>
+    <rect x="260" y="170" width="110" height="80" fill="#c3d2d6"/>
+    ${gridLines('#0f7c8c',50,0.25)}
+  `),
+  maps: ()=> svgWrap(`
+    <rect width="400" height="300" fill="#f3ecd8"/>
+    <path d="M0,220 Q60,180 120,210 T240,190 T400,215" fill="none" stroke="#0d2b45" stroke-width="2" opacity="0.5"/>
+    <path d="M0,240 Q60,205 120,235 T240,215 T400,238" fill="none" stroke="#0d2b45" stroke-width="2" opacity="0.4"/>
+    <path d="M0,260 Q60,232 120,258 T240,240 T400,260" fill="none" stroke="#0d2b45" stroke-width="2" opacity="0.3"/>
+    <path d="M170,60 L200,20 L230,60 Z" fill="#b8873a" opacity="0.6"/>
+    <circle cx="200" cy="130" r="4" fill="#0f7c8c"/>
+    ${gridLines('#0d2b45',50,0.08)}
+  `),
+  custom: ()=> svgWrap(`
+    <rect width="400" height="300" fill="#eef3f5"/>
+    ${gridLines('#0f7c8c',40,0.15)}
+    <rect x="90" y="60" width="220" height="170" rx="14" fill="none" stroke="#b8873a" stroke-width="3" stroke-dasharray="10 8"/>
+    <circle cx="200" cy="145" r="10" fill="#0d2b45"/>
+    <path d="M200,145 m0,-22 a22,22 0 1,1 -0.1,0 z" fill="none" stroke="#0d2b45" stroke-width="2" opacity="0.5"/>
+  `),
+  gis: ()=> svgWrap(`
+    <rect width="400" height="300" fill="#eef3f5"/>
+    <rect x="60" y="150" width="220" height="110" rx="6" fill="#0d2b45" opacity="0.75"/>
+    <rect x="100" y="105" width="220" height="110" rx="6" fill="#0f7c8c" opacity="0.75"/>
+    <rect x="140" y="60" width="220" height="110" rx="6" fill="#b8873a" opacity="0.75"/>
+  `),
+  gnss: ()=> svgWrap(`
+    <rect width="400" height="300" fill="#0d2b45"/>
+    <g fill="#ffffff">
+      <rect x="290" y="40" width="26" height="14"/>
+      <rect x="270" y="46" width="18" height="4"/>
+      <rect x="318" y="46" width="18" height="4"/>
+      <circle cx="303" cy="47" r="4" fill="#b8873a"/>
+    </g>
+    <path d="M303,54 L200,220" stroke="#0f7c8c" stroke-width="2" stroke-dasharray="6 6"/>
+    <circle cx="200" cy="220" r="8" fill="#b8873a"/>
+    <path d="M170,220 a30,30 0 0,1 60,0" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
+    <path d="M150,220 a50,50 0 0,1 100,0" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.3"/>
+  `),
+  borders: ()=> svgWrap(`
+    <rect width="400" height="300" fill="#e6f3f4"/>
+    <rect width="400" height="300" fill="#0d2b45" opacity="0.06"/>
+    <path d="M0,80 L150,140 L260,90 L400,150" fill="none" stroke="#b8873a" stroke-width="3" stroke-dasharray="12 8"/>
+    <circle cx="150" cy="140" r="6" fill="#0f7c8c"/>
+    <circle cx="260" cy="90" r="6" fill="#0f7c8c"/>
+    <rect x="80" y="180" width="30" height="20" fill="#0d2b45" opacity="0.7"/>
+  `),
+  survey: ()=> svgWrap(`
+    <rect width="400" height="300" fill="#eef3f5"/>
+    <g stroke="#0d2b45" stroke-width="1.5" opacity="0.6">
+      <line x1="60" y1="230" x2="180" y2="80"/>
+      <line x1="180" y1="80" x2="320" y2="200"/>
+      <line x1="320" y1="200" x2="60" y2="230"/>
+      <line x1="180" y1="80" x2="230" y2="240"/>
+      <line x1="60" y1="230" x2="230" y2="240"/>
+    </g>
+    <circle cx="60" cy="230" r="6" fill="#0f7c8c"/>
+    <circle cx="180" cy="80" r="6" fill="#0f7c8c"/>
+    <circle cx="320" cy="200" r="6" fill="#0f7c8c"/>
+    <circle cx="230" cy="240" r="6" fill="#b8873a"/>
+  `),
+  cadastre: ()=> svgWrap(`
+    <rect width="400" height="300" fill="#f7f8fa"/>
+    ${gridLines('#0d2b45',44,0.3)}
+    <rect x="132" y="128" width="88" height="88" fill="#b8873a" opacity="0.35" stroke="#b8873a" stroke-width="2"/>
+  `),
+  pro: ()=> svgWrap(`
+    <rect width="400" height="300" fill="#f6ecdb"/>
+    <rect x="120" y="50" width="160" height="200" rx="6" fill="#ffffff" stroke="#0d2b45" stroke-width="2"/>
+    <line x1="140" y1="90" x2="260" y2="90" stroke="#0d2b45" stroke-width="2" opacity="0.4"/>
+    <line x1="140" y1="115" x2="260" y2="115" stroke="#0d2b45" stroke-width="2" opacity="0.4"/>
+    <line x1="140" y1="140" x2="230" y2="140" stroke="#0d2b45" stroke-width="2" opacity="0.4"/>
+    <circle cx="200" cy="195" r="28" fill="none" stroke="#b8873a" stroke-width="4"/>
+    <path d="M188,195 l8,8 l16,-18" fill="none" stroke="#b8873a" stroke-width="3"/>
+  `),
+};
+function categoryArt(catId){ return (CATEGORY_ART[catId]||CATEGORY_ART.aerial)(); }
+
+let cart = []; // {id, qty}
+let currentProduct = null;
+
+/* ================= ROUTING ================= */
+function go(route){
+  document.querySelectorAll('.route').forEach(r=>r.classList.remove('active'));
+  document.getElementById('route-'+route).classList.add('active');
+  document.getElementById('route-'+route).classList.remove('fade-in'); void document.getElementById('route-'+route).offsetWidth; document.getElementById('route-'+route).classList.add('fade-in');
+  window.scrollTo({top:0, behavior:'smooth'});
+  renderSFPanel(route);
+  if(route==='catalog') renderCatalog();
+  if(route==='cart') renderCart();
+  if(route==='checkout') renderCheckout(1);
+  if(route==='account') renderAccount('orders');
+  if(route==='support') renderCases();
+}
+
+function searchFromHome(){
+  const v = document.getElementById('homeSearch').value;
+  go('catalog');
+  setTimeout(()=>{ document.getElementById('catalogSearch').value = v; renderCatalog(); }, 50);
+}
+
+/* ================= SF TOGGLE ================= */
+function toggleSF(){ document.body.classList.toggle('sf-on'); }
+function closeSFPanel(){ document.getElementById('sf-panel').classList.remove('open'); }
+
+const SF_CONTENT = {
+  home: [
+    {step:'גלישה וחיפוש אנונימי', obj:'ללא רשומה (מבקר אנונימי)', auto:'-', notif:'-', next:'מעבר לקטלוג'},
+    {step:'שליחת טופס יצירת קשר / הרשמה', obj:'Lead (Web-to-Lead)', auto:'Flow הקצאה לנציג לפי אזור', notif:'מייל אישור למבקש', next:'המרה ל-Account + Contact'},
+  ],
+  catalog: [
+    {step:'סינון וחיפוש מוצר', obj:'שאילתה על Product2 + PricebookEntry', auto:'תצוגה דינמית לפי מחירון פעיל', notif:'-', next:'כניסה לדף מוצר'},
+  ],
+  product: [
+    {step:'צפייה במוצר', obj:'Product2', auto:'-', notif:'-', next:'הוספה לסל / בקשת הצעת מחיר'},
+    {step:'הוספה לסל', obj:'OpportunityLineItem בטיוטת Opportunity', auto:'יצירת/עדכון Opportunity (Stage: Cart)', notif:'-', next:'מעבר לסל'},
+    {step:'בקשת הצעת מחיר', obj:'Quote (מקושר ל-Opportunity)', auto:'OmniStudio DocGen להפקת PDF', notif:'מייל הצעת מחיר ללקוח', next:'אישור/דחיית הצעה'},
+  ],
+  cart: [
+    {step:'צפייה בסל וסיכום', obj:'Opportunity (Stage: Cart) + OpportunityLineItem[]', auto:'חישוב מחיר/מע"מ אוטומטי (BRE)', notif:'-', next:'מעבר לתשלום'},
+  ],
+  checkout: [
+    {step:'פרטי לקוח ומשלוח', obj:'Account / Contact - עדכון פרטים', auto:'ולידציה מול Business Rules Engine', notif:'-', next:'שלב תשלום'},
+    {step:'ביצוע תשלום', obj:'Order (נוצר מתוך Opportunity שנסגרה - Closed Won)', auto:'אינטגרציה לסליקה + עדכון Payment Status', notif:'SMS + מייל אישור הזמנה', next:'הפקת קבצים/משלוח'},
+    {step:'אישור הזמנה', obj:'Order + Asset (במידה ומדובר במנוי)', auto:'יצירת Salesforce Files להורדה', notif:'מייל עם קישור הורדה', next:'זמין באזור האישי'},
+  ],
+  account: [
+    {step:'צפייה בהזמנות/חשבוניות/הורדות', obj:'Order, Invoice, Salesforce Files/Asset', auto:'סנכרון סטטוס בזמן אמת', notif:'-', next:'פתיחת פנייה במידת הצורך'},
+    {step:'ניהול מנויים', obj:'Contract / Recurring Order', auto:'Flow תזכורת חידוש מנוי', notif:'מייל 30 יום לפני חידוש', next:'חידוש אוטומטי/ידני'},
+  ],
+  support: [
+    {step:'פתיחת פנייה', obj:'Case (Record Type לפי סוג פנייה)', auto:'הפעלת Action Plan Template', notif:'מייל אישור פתיחת פנייה + SLA', next:'טיפול נציג/מודד מוסמך'},
+  ],
+};
+
+function renderSFPanel(route){
+  const data = SF_CONTENT[route] || [];
+  const body = document.getElementById('sf-panel-body');
+  body.innerHTML = data.map(s=>`
+    <div class="sf-step">
+      <div class="font-semibold mb-1">🧑‍💻 פעולת לקוח: ${s.step}</div>
+      <div class="text-xs" style="color:#0d2b45"><b>אובייקט Salesforce:</b> ${s.obj}</div>
+      <div class="text-xs" style="color:#0d2b45"><b>אוטומציה:</b> ${s.auto}</div>
+      <div class="text-xs" style="color:#0d2b45"><b>התראה:</b> ${s.notif}</div>
+      <div class="text-xs" style="color:#0d2b45"><b>שלב הבא:</b> ${s.next}</div>
+    </div>`).join('') || '<div class="text-sm" style="color:var(--ink-soft)">אין מיפוי ספציפי למסך זה.</div>';
+}
+
+// small floating button to open SF panel, injected once
+document.addEventListener('DOMContentLoaded', ()=>{
+  const btn = document.createElement('button');
+  btn.textContent = '🗺️ ארכיטקטורת Salesforce';
+  btn.className = 'fixed bottom-5 left-5 z-50 text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg';
+  btn.style.background = 'var(--navy)'; btn.style.color='#fff';
+  btn.onclick = ()=>{ document.getElementById('sf-panel').classList.add('open'); };
+  document.body.appendChild(btn);
+  renderHome();
+});
+
+/* ================= HOME RENDER ================= */
+function renderHome(){
+  document.getElementById('quickCats').innerHTML = CATEGORIES.slice(0,8).map(c=>`
+    <div class="card p-4 text-center cursor-pointer hover:shadow-md transition" onclick="filterCategoryAndGo('${c.id}')">
+      <div class="text-2xl mb-1">${c.icon}</div>
+      <div class="text-sm font-semibold">${c.name}</div>
+    </div>`).join('');
+  document.getElementById('featuredGrid').innerHTML = PRODUCTS.slice(0,4).map(productCard).join('');
+}
+function filterCategoryAndGo(catId){
+  go('catalog');
+  setTimeout(()=>{ activeCat = catId; renderCatalog(); }, 50);
+}
+
+/* ================= PRODUCT CARD ================= */
+function productCard(p){
+  const cat = CATEGORIES.find(c=>c.id===p.cat);
+  return `<div class="card overflow-hidden flex flex-col">
+    <div class="h-32 relative overflow-hidden">${categoryArt(p.cat)}
+      <span class="absolute top-2 start-2 bg-white/90 backdrop-blur rounded-full w-8 h-8 flex items-center justify-center text-sm shadow" title="${cat.name}">${cat.icon}</span>
+    </div>
+    <div class="p-4 flex flex-col flex-1">
+      <div class="text-xs mb-1" style="color:var(--teal)">${cat.name}</div>
+      <div class="font-semibold text-sm mb-2 leading-snug">${p.name}</div>
+      <div class="text-xs mb-3" style="color:var(--ink-soft)">${p.type} · ${p.lic}</div>
+      <div class="mt-auto flex items-center justify-between">
+        <span class="font-bold" style="color:var(--navy)">${p.price.toLocaleString()} ₪</span>
+        <button class="text-xs font-semibold px-3 py-1.5 rounded-lg navy-btn" onclick="openProduct('${p.id}')">פרטים</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ================= CATALOG ================= */
+let activeCat = null;
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.getElementById('catFilter').innerHTML = `<label class="flex items-center gap-2"><input type="radio" name="catf" checked onclick="activeCat=null; renderCatalog();"> הכול</label>` +
+    CATEGORIES.map(c=>`<label class="flex items-center gap-2"><input type="radio" name="catf" onclick="activeCat='${c.id}'; renderCatalog();"> ${c.icon} ${c.name}</label>`).join('');
+  const types = [...new Set(PRODUCTS.map(p=>p.type))];
+  document.getElementById('typeFilter').innerHTML = types.map(t=>`<span class="chip" onclick="toggleTypeChip(this,'${t}')">${t}</span>`).join('');
+});
+let activeTypes = new Set();
+function toggleTypeChip(el, t){
+  el.classList.toggle('active');
+  if(activeTypes.has(t)) activeTypes.delete(t); else activeTypes.add(t);
+  renderCatalog();
+}
+function renderCatalog(){
+  const q = (document.getElementById('catalogSearch')?.value || '').trim();
+  const res = document.getElementById('resFilter')?.value || '';
+  const maxPrice = Number(document.getElementById('priceFilter')?.value || 5000);
+  document.getElementById('priceVal') && (document.getElementById('priceVal').textContent = maxPrice);
+  const lic = document.getElementById('licFilter')?.value || '';
+  const sort = document.getElementById('sortSel')?.value || 'rel';
+
+  let list = PRODUCTS.filter(p=>{
+    if(activeCat && p.cat!==activeCat) return false;
+    if(activeTypes.size && !activeTypes.has(p.type)) return false;
+    if(res && p.res!==res) return false;
+    if(lic && p.lic!==lic) return false;
+    if(p.price>maxPrice) return false;
+    if(q && !(p.name+p.desc+p.type).includes(q)) return false;
+    return true;
+  });
+  if(sort==='priceAsc') list.sort((a,b)=>a.price-b.price);
+  if(sort==='priceDesc') list.sort((a,b)=>b.price-a.price);
+
+  document.getElementById('resultCount').textContent = list.length;
+  document.getElementById('catalogGrid').innerHTML = list.map(productCard).join('') || '<div class="col-span-3 text-center py-10" style="color:var(--ink-soft)">לא נמצאו תוצאות מתאימות</div>';
+}
+
+/* ================= PRODUCT PAGE ================= */
+function openProduct(id){
+  currentProduct = PRODUCTS.find(p=>p.id===id);
+  go('product');
+  renderProduct();
+}
+function renderProduct(){
+  const p = currentProduct; if(!p) return;
+  const cat = CATEGORIES.find(c=>c.id===p.cat);
+  const related = p.related.map(rid=>PRODUCTS.find(pp=>pp.id===rid)).filter(Boolean);
+  document.getElementById('productDetail').innerHTML = `
+    <div class="flex items-center gap-2 text-sm mb-4" style="color:var(--ink-soft)">
+      <span class="cursor-pointer" onclick="go('home')">בית</span> / <span class="cursor-pointer" onclick="go('catalog')">קטלוג</span> / <span style="color:var(--ink)">${p.name}</span>
+    </div>
+    <div class="grid md:grid-cols-2 gap-8">
+      <div>
+        <div class="h-72 rounded-xl relative overflow-hidden mb-3">${categoryArt(p.cat)}
+          <span class="absolute top-3 start-3 bg-white/90 backdrop-blur rounded-full w-11 h-11 flex items-center justify-center text-xl shadow">${cat.icon}</span>
+        </div>
+        <div class="grid grid-cols-4 gap-2">
+          ${[0,1,2,3].map(i=>`<div class="h-16 rounded-lg overflow-hidden relative"><div class="absolute inset-0" style="transform:scale(1.8) translate(${(i-1.5)*12}%, ${(i%2?10:-10)}%)">${categoryArt(p.cat)}</div></div>`).join('')}
+        </div>
+      </div>
+      <div>
+        <div class="text-xs mb-1" style="color:var(--teal)">${cat.name}</div>
+        <h1 class="text-2xl font-bold mb-2" style="color:var(--navy)">${p.name}</h1>
+        <div class="text-sm mb-4" style="color:var(--ink-soft)">${p.desc}</div>
+        <div class="grid grid-cols-2 gap-3 text-sm mb-5">
+          <div><b>סוג:</b> ${p.type}</div>
+          <div><b>רזולוציה:</b> ${p.res}</div>
+          <div><b>רישיון:</b> ${p.lic}</div>
+          <div><b>מסלול מכירה:</b> ${cat.tracks.join(', ')}</div>
+        </div>
+        <div class="text-3xl font-extrabold mb-4" style="color:var(--navy)">${p.price.toLocaleString()} ₪</div>
+        <div class="flex items-center gap-3 mb-2">
+          <div class="flex items-center border rounded-lg" style="border-color:var(--line)">
+            <button class="qty-btn" onclick="stepQty(-1)">-</button>
+            <span id="pQty" class="w-10 text-center">1</span>
+            <button class="qty-btn" onclick="stepQty(1)">+</button>
+          </div>
+          <button class="gold-btn rounded-lg px-6 py-2.5 font-semibold sf-highlight" onclick="addToCart('${p.id}')">הוספה לסל</button>
+          <button class="navy-btn rounded-lg px-6 py-2.5 font-semibold sf-highlight" onclick="requestQuote('${p.id}')">בקשת הצעת מחיר</button>
+        </div>
+        <div class="sf-badge">SF: הוספה לסל ← OpportunityLineItem בטיוטת Opportunity | בקשת הצעה ← יצירת Quote מקושרת</div>
+      </div>
+    </div>
+    <div class="mt-10">
+      <h2 class="text-lg font-bold mb-3" style="color:var(--navy)">מוצרים קשורים</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">${related.map(productCard).join('')}</div>
+    </div>
+    <div class="mt-10 max-w-2xl">
+      <h2 class="text-lg font-bold mb-3" style="color:var(--navy)">שאלות נפוצות</h2>
+      <div class="space-y-2">${FAQS.map(f=>`<details class="card p-3"><summary class="cursor-pointer font-medium text-sm">${f}</summary><div class="text-sm mt-2" style="color:var(--ink-soft)">מענה מלא מוצג ללקוח בהתאם למאפייני המוצר והרישיון שנבחר.</div></details>`).join('')}</div>
+    </div>
+  `;
+}
+let pQty = 1;
+function stepQty(d){ pQty = Math.max(1, pQty+d); document.getElementById('pQty').textContent = pQty; }
+function addToCart(id){
+  const existing = cart.find(c=>c.id===id);
+  if(existing) existing.qty += pQty; else cart.push({id, qty:pQty});
+  pQty = 1;
+  updateCartCount();
+  alert('המוצר נוסף לסל הקניות');
+}
+function requestQuote(id){
+  alert('בקשת הצעת מחיר נשלחה - נוצרה רשומת Quote במערכת, ותישלח הצעה מפורטת למייל הלקוח בתוך יום עסקים.');
+}
+function updateCartCount(){
+  document.getElementById('cartCount').textContent = cart.reduce((s,c)=>s+c.qty,0);
+}
+
+/* ================= CART ================= */
+function renderCart(){
+  if(!cart.length){
+    document.getElementById('cartItems').innerHTML = '<div class="card p-8 text-center" style="color:var(--ink-soft)">הסל ריק. עברו לקטלוג כדי להוסיף מוצרים.</div>';
+  } else {
+    document.getElementById('cartItems').innerHTML = cart.map(c=>{
+      const p = PRODUCTS.find(pp=>pp.id===c.id);
+      return `<div class="card p-4 flex items-center gap-4">
+        <div class="w-16 h-16 rounded-lg overflow-hidden shrink-0">${categoryArt(p.cat)}</div>
+        <div class="flex-1">
+          <div class="font-semibold text-sm">${p.name}</div>
+          <div class="text-xs" style="color:var(--ink-soft)">${p.type} · ${p.lic}</div>
+        </div>
+        <div class="flex items-center border rounded-lg" style="border-color:var(--line)">
+          <button class="qty-btn" onclick="cartQty('${c.id}',-1)">-</button>
+          <span class="w-8 text-center text-sm">${c.qty}</span>
+          <button class="qty-btn" onclick="cartQty('${c.id}',1)">+</button>
+        </div>
+        <div class="font-bold w-24 text-left" style="color:var(--navy)">${(p.price*c.qty).toLocaleString()} ₪</div>
+        <button class="text-xs text-red-600" onclick="removeCart('${c.id}')">הסרה</button>
+      </div>`;
+    }).join('');
+  }
+  const sub = cart.reduce((s,c)=>s+PRODUCTS.find(p=>p.id===c.id).price*c.qty,0);
+  document.getElementById('sumSub').textContent = sub.toLocaleString()+' ₪';
+  document.getElementById('sumVat').textContent = Math.round(sub*0.17).toLocaleString()+' ₪';
+  document.getElementById('sumTotal').textContent = Math.round(sub*1.17).toLocaleString()+' ₪';
+}
+function cartQty(id,d){
+  const c = cart.find(x=>x.id===id); c.qty = Math.max(1,c.qty+d);
+  updateCartCount(); renderCart();
+}
+function removeCart(id){ cart = cart.filter(c=>c.id!==id); updateCartCount(); renderCart(); }
+
+/* ================= CHECKOUT ================= */
+const CO_STEPS = ['פרטי לקוח','משלוח וקבלה','תשלום','אישור'];
+function renderCheckout(step){
+  document.getElementById('checkoutSteps').innerHTML = CO_STEPS.map((s,i)=>`
+    <div class="flex items-center gap-2">
+      <div class="step-dot ${i+1<=step?'on':''}">${i+1}</div>
+      <span class="text-sm ${i+1===step?'font-bold':''}" style="color:${i+1===step?'var(--navy)':'var(--ink-soft)'}">${s}</span>
+      ${i<CO_STEPS.length-1?'<div class="w-8 h-px" style="background:var(--line)"></div>':''}
+    </div>`).join('');
+
+  const sub = cart.reduce((s,c)=>s+PRODUCTS.find(p=>p.id===c.id).price*c.qty,0);
+  document.getElementById('coTotal').textContent = Math.round(sub*1.17).toLocaleString()+' ₪';
+
+  let html = '';
+  if(step===1){
+    html = `<div class="font-bold mb-4">פרטי לקוח</div>
+      <div class="grid sm:grid-cols-2 gap-4 text-sm">
+        <div><label class="block mb-1">שם מלא</label><input class="w-full border rounded-lg px-3 py-2" style="border-color:var(--line)" value="ישראל ישראלי"></div>
+        <div><label class="block mb-1">מספר תעודת זהות / ח.פ</label><input class="w-full border rounded-lg px-3 py-2" style="border-color:var(--line)" value="512345678"></div>
+        <div><label class="block mb-1">דוא"ל</label><input class="w-full border rounded-lg px-3 py-2" style="border-color:var(--line)" value="israel@example.gov.il"></div>
+        <div><label class="block mb-1">טלפון</label><input class="w-full border rounded-lg px-3 py-2" style="border-color:var(--line)" value="050-1234567"></div>
+      </div>
+      <div class="sf-badge mt-4">SF: עדכון/יצירת Account + Contact לפי מזהה מס לקוח</div>
+      <button class="gold-btn rounded-lg px-6 py-2.5 mt-6 font-semibold" onclick="renderCheckout(2)">המשך</button>`;
+  } else if(step===2){
+    html = `<div class="font-bold mb-4">אופן קבלת המוצר</div>
+      <label class="flex items-center gap-2 mb-3 text-sm"><input type="radio" name="delivery" checked> הורדה דיגיטלית מיידית באזור האישי</label>
+      <label class="flex items-center gap-2 mb-3 text-sm"><input type="radio" name="delivery"> משלוח פיזי (מפות מודפסות)</label>
+      <label class="flex items-center gap-2 mb-3 text-sm"><input type="radio" name="delivery"> איסוף עצמי ממשרדי המרכז</label>
+      <div class="sf-badge mt-2">SF: שיטת מסירה נשמרת בשדה Delivery Method ב-Order</div>
+      <div class="flex gap-2 mt-6">
+        <button class="navy-btn rounded-lg px-6 py-2.5 font-semibold" onclick="renderCheckout(1)">חזרה</button>
+        <button class="gold-btn rounded-lg px-6 py-2.5 font-semibold" onclick="renderCheckout(3)">המשך לתשלום</button>
+      </div>`;
+  } else if(step===3){
+    html = `<div class="font-bold mb-4">פרטי תשלום</div>
+      <div class="grid sm:grid-cols-2 gap-4 text-sm">
+        <div class="sm:col-span-2"><label class="block mb-1">מספר כרטיס אשראי</label><input class="w-full border rounded-lg px-3 py-2" style="border-color:var(--line)" placeholder="0000 0000 0000 0000"></div>
+        <div><label class="block mb-1">בתוקף עד</label><input class="w-full border rounded-lg px-3 py-2" style="border-color:var(--line)" placeholder="MM/YY"></div>
+        <div><label class="block mb-1">CVV</label><input class="w-full border rounded-lg px-3 py-2" style="border-color:var(--line)" placeholder="***"></div>
+        <div class="sm:col-span-2"><label class="flex items-center gap-2"><input type="checkbox" checked> חיוב עבור לקוח ארגוני עם פטור/ללא מע"מ (רשות מקומית)</label></div>
+      </div>
+      <div class="sf-badge mt-4">SF: אינטגרציית סליקה חיצונית ← עדכון Payment Status ← Order.Status = Activated</div>
+      <div class="flex gap-2 mt-6">
+        <button class="navy-btn rounded-lg px-6 py-2.5 font-semibold" onclick="renderCheckout(2)">חזרה</button>
+        <button class="gold-btn rounded-lg px-6 py-2.5 font-semibold" onclick="renderCheckout(4)">ביצוע תשלום</button>
+      </div>`;
+  } else if(step===4){
+    html = `<div class="text-center py-6">
+      <div class="text-4xl mb-3">✅</div>
+      <div class="font-bold text-lg mb-2">ההזמנה בוצעה בהצלחה!</div>
+      <div class="text-sm mb-4" style="color:var(--ink-soft)">מספר הזמנה: ORD-${Math.floor(10000+Math.random()*89999)}. אישור וקישור להורדה נשלחו לדוא"ל ולסמס.</div>
+      <div class="sf-badge mb-4">SF: Order נוצר מ-Opportunity (Closed Won) + Salesforce Files מקושרים + Flow שליחת התראה</div>
+      <button class="gold-btn rounded-lg px-6 py-2.5 font-semibold" onclick="cart=[]; updateCartCount(); go('account');">מעבר לאזור האישי</button>
+    </div>`;
+    cart = [];
+  }
+  document.getElementById('checkoutBody').innerHTML = html;
+}
+
+/* ================= ACCOUNT ================= */
+const ACCOUNT_TABS = [
+  {id:'orders', label:'הזמנות'},
+  {id:'invoices', label:'חשבוניות'},
+  {id:'downloads', label:'הורדות'},
+  {id:'quotes', label:'הצעות מחיר'},
+  {id:'subs', label:'מנויים'},
+  {id:'cases', label:'פניות ותמיכה'},
+  {id:'favorites', label:'מועדפים'},
+  {id:'notifications', label:'התראות'},
+  {id:'profile', label:'פרופיל'},
+];
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.getElementById('accountTabs').innerHTML = ACCOUNT_TABS.map(t=>`<button id="tab-${t.id}" class="chip whitespace-nowrap" onclick="renderAccount('${t.id}')">${t.label}</button>`).join('');
+});
+
+const DEMO_ORDERS = [
+  {id:'ORD-48213', item:'אורתופוטו צבעוני - כיסוי ארצי', date:'02/07/2026', status:'הושלם', amount:1404},
+  {id:'ORD-48190', item:'מנוי תחנת CORS - זמן אמת (RTK)', date:'21/06/2026', status:'בטיפול', amount:1872},
+  {id:'ORD-48102', item:'תיק גוש חלקה - ירושלים', date:'05/06/2026', status:'הושלם', amount:304},
+];
+const DEMO_QUOTES = [
+  {id:'Q-3021', item:'שכבת GIS - תשתיות על', status:'ממתין לאישור לקוח', amount:2574},
+  {id:'Q-3005', item:'שירות ייעוץ מדידה מקצועי', status:'אושרה', amount:1053},
+];
+const DEMO_SUBS = [
+  {id:'SUB-114', item:'מנוי VRS - רשת תחנות ייחוס וירטואליות', renew:'15/09/2026', status:'פעיל'},
+  {id:'SUB-098', item:'מנוי לשירותי Web Map Service', renew:'02/08/2026', status:'פעיל'},
+];
+
+function renderAccount(tab){
+  ACCOUNT_TABS.forEach(t=>document.getElementById('tab-'+t.id)?.classList.toggle('active', t.id===tab));
+  const el = document.getElementById('accountBody');
+  if(tab==='orders'){
+    el.innerHTML = tableWrap(['מס\' הזמנה','מוצר','תאריך','סטטוס','סכום',''], DEMO_ORDERS.map(o=>[o.id,o.item,o.date,statusPill(o.status),o.amount.toLocaleString()+' ₪','<button class="text-xs" style="color:var(--teal)">פרטים</button>']))
+      + sfNote('SF: כל שורה = רשומת Order מקושרת ל-Opportunity המקורית; הסטטוס מסונכרן משדה Order.Status');
+  } else if(tab==='invoices'){
+    el.innerHTML = tableWrap(['מס\' חשבונית','הזמנה מקושרת','תאריך','סכום כולל מע"מ',''], DEMO_ORDERS.map(o=>['INV-'+o.id.slice(4), o.id, o.date, Math.round(o.amount*1.17).toLocaleString()+' ₪', '<button class="text-xs" style="color:var(--teal)">הורדת PDF</button>']))
+      + sfNote('SF: חשבונית נוצרת אוטומטית בעת מעבר Order לסטטוס Activated, ומקושרת ל-Order דרך שדה קשר');
+  } else if(tab==='downloads'){
+    el.innerHTML = tableWrap(['קובץ','סוג','גודל','תוקף רישיון',''], [
+      ['אורתופוטו_כיסוי_ארצי_2026.tif','אורתופוטו','1.2GB','ללא הגבלה','<button class="text-xs" style="color:var(--teal)">הורדה</button>'],
+      ['גוש_חלקה_ירושלים.pdf','קדסטר','4MB','ללא הגבלה','<button class="text-xs" style="color:var(--teal)">הורדה</button>'],
+    ]) + sfNote('SF: קבצים מנוהלים כ-Salesforce Files, מקושרים ל-Asset שנוצר עם השלמת ה-Order');
+  } else if(tab==='quotes'){
+    el.innerHTML = tableWrap(['מס\' הצעה','מוצר','סטטוס','סכום',''], DEMO_QUOTES.map(q=>[q.id,q.item,statusPill(q.status),q.amount.toLocaleString()+' ₪','<button class="text-xs" style="color:var(--teal)">צפייה</button>']))
+      + sfNote('SF: רשומת Quote מקושרת ל-Opportunity; אישור לקוח מעדכן Quote.Status ומייצר Order');
+  } else if(tab==='subs'){
+    el.innerHTML = tableWrap(['מס\' מנוי','שירות','תאריך חידוש','סטטוס',''], DEMO_SUBS.map(s=>[s.id,s.item,s.renew,statusPill(s.status),'<button class="text-xs" style="color:var(--teal)">ניהול מנוי</button>']))
+      + sfNote('SF: מנוי מנוהל כ-Contract / Recurring Order; Flow שולח תזכורת חידוש 30 יום מראש');
+  } else if(tab==='cases'){
+    el.innerHTML = `<div id="caseListAccount"></div>` + sfNote('SF: כל פנייה = רשומת Case עם Record Type ו-Action Plan Template מתאים');
+    renderCases('caseListAccount');
+  } else if(tab==='favorites'){
+    el.innerHTML = `<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">${PRODUCTS.slice(4,7).map(productCard).join('')}</div>` + sfNote('SF: מועדפים נשמרים כשדה Custom Object "Saved Product" המקושר ל-Contact');
+  } else if(tab==='notifications'){
+    el.innerHTML = `<div class="space-y-2">
+      ${notifRow('ההזמנה ORD-48213 הושלמה וזמינה להורדה','לפני יום')}
+      ${notifRow('ההצעה Q-3021 ממתינה לאישורך','לפני 3 ימים')}
+      ${notifRow('מנוי SUB-098 יחודש בעוד 12 יום','לפני שבוע')}
+    </div>` + sfNote('SF: התראות מופקות ע"י Flow על שינוי סטטוס ברשומות Order/Quote/Contract ומוצגות דרך Platform Notification');
+  } else if(tab==='profile'){
+    el.innerHTML = `<div class="card p-6 max-w-lg">
+      <div class="grid gap-3 text-sm">
+        <div><b>שם:</b> ישראל ישראלי</div>
+        <div><b>ארגון:</b> עיריית דוגמה</div>
+        <div><b>דוא"ל:</b> israel@example.gov.il</div>
+        <div><b>טלפון:</b> 050-1234567</div>
+        <div><b>סוג לקוח:</b> ארגוני - רשות מקומית</div>
+      </div>
+    </div>` + sfNote('SF: מסך זה משקף את רשומת Contact המקושרת ל-Account הארגוני');
+  }
+}
+function tableWrap(headers, rows){
+  return `<div class="card overflow-x-auto"><table class="w-full text-sm"><thead><tr style="background:var(--paper)">${headers.map(h=>`<th class="text-start p-3 font-semibold">${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr class="border-t" style="border-color:var(--line)">${r.map(c=>`<td class="p-3">${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+}
+function statusPill(s){
+  const color = s.includes('הושלם')||s==='פעיל'||s==='אושרה' ? 'var(--ok)' : 'var(--warn)';
+  return `<span class="text-xs font-semibold px-2 py-1 rounded-full" style="background:${color}20; color:${color}">${s}</span>`;
+}
+function sfNote(t){ return `<div class="sf-badge mt-4">${t}</div>`; }
+function notifRow(t,time){ return `<div class="card p-3 flex justify-between text-sm"><span>${t}</span><span style="color:var(--ink-soft)" class="text-xs">${time}</span></div>`; }
+
+/* ================= SUPPORT / CASES ================= */
+let demoCases = [
+  {id:'CASE-2291', type:'בקשה לייעוץ מודד מוסמך', status:'בטיפול'},
+  {id:'CASE-2277', type:'בירור חשבונית / תשלום', status:'נסגר'},
+];
+function renderCases(targetId){
+  const html = demoCases.map(c=>`<div class="flex items-center justify-between border-b py-2 last:border-0" style="border-color:var(--line)">
+      <div><div class="font-medium">${c.id}</div><div class="text-xs" style="color:var(--ink-soft)">${c.type}</div></div>
+      ${statusPill(c.status)}
+    </div>`).join('');
+  const el = document.getElementById(targetId || 'caseList');
+  if(el) el.innerHTML = html;
+}
+function submitCase(){
+  const nid = 'CASE-'+Math.floor(2300+Math.random()*99);
+  demoCases.unshift({id:nid, type:'פנייה חדשה', status:'נפתח'});
+  renderCases();
+  alert('הפנייה נשלחה בהצלחה. מספר פנייה: '+nid);
+}
+</script>
+</body>
+</html>
